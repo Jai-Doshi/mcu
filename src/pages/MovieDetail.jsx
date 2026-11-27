@@ -3,7 +3,8 @@ import { Link, useParams } from 'react-router-dom';
 import { IMG, PHASES, byId, chronological, isUpcoming, leadsInto, parseCast } from '../data/movies.js';
 import { TRAILERS } from '../data/trailers.js';
 import { useReveal, useWatched } from '../hooks.js';
-import PosterCard from '../components/PosterCard.jsx';
+import PosterCard, { useJustWatched } from '../components/PosterCard.jsx';
+import { CheckIcon, EyeIcon } from '../components/WatchIcons.jsx';
 import ShieldLoader from '../components/ShieldLoader.jsx';
 import NotFound from './NotFound.jsx';
 
@@ -92,6 +93,7 @@ export default function MovieDetail() {
   const movie = byId[id];
   const { watched, toggle } = useWatched();
   const [trailer, setTrailer] = useState(false);
+  const [pop, fire] = useJustWatched();
   const [mobileStoryTab, setMobileStoryTab] = useState('story');
   const [storyExpanded, setStoryExpanded] = useState(false);
   const { progress, done: imagesReady } = useHeroImages(movie);
@@ -124,6 +126,7 @@ export default function MovieDetail() {
   });
 
   const ytKey = TRAILERS[movie.tmdb];
+  const isWatched = watched.has(movie.id);
 
   return (
     <article className={`detail ${imagesReady ? 'loaded' : 'loading'}`} style={{ '--phase': phase.color }}>
@@ -146,6 +149,12 @@ export default function MovieDetail() {
               sizes="(max-width: 700px) 60vw, 340px"
               alt={`${movie.title} poster`}
             />
+            {isWatched && (
+              <span className={`poster-seal ${pop ? 'pop' : ''}`} aria-label="You have watched this film">
+                <CheckIcon size={14} />
+                <small>Watched</small>
+              </span>
+            )}
           </a>
           <div className="detail-info">
             <p className="eyebrow" style={{ color: phase.color }}>
@@ -174,8 +183,19 @@ export default function MovieDetail() {
               {upcoming ? (
                 <Countdown date={movie.release} />
               ) : (
-                <button className={`btn ${watched.has(movie.id) ? 'btn-ghost' : 'btn-primary'}`} onClick={() => toggle(movie.id)}>
-                  {watched.has(movie.id) ? '✓ Watched' : 'Mark as watched'}
+                <button
+                  type="button"
+                  className={`btn watch-btn ${isWatched ? 'is-watched' : 'btn-primary'} ${pop ? 'pop' : ''}`}
+                  onClick={() => {
+                    if (!isWatched) fire();
+                    toggle(movie.id);
+                  }}
+                  aria-pressed={isWatched}
+                  title={isWatched ? 'Tap to mark as not watched' : undefined}
+                >
+                  <span className="wb-icon">{isWatched ? <CheckIcon size={16} /> : <EyeIcon size={17} />}</span>
+                  <span className="wb-text">{isWatched ? 'Watched' : 'Mark as watched'}</span>
+                  {/* {isWatched && <span className="wb-undo">Undo</span>} */}
                 </button>
               )}
               {ytKey && (

@@ -5,6 +5,7 @@ import { useReveal, useWatched } from '../hooks.js';
 import PosterCard from '../components/PosterCard.jsx';
 import ScrubHero from '../components/ScrubHero.jsx';
 import PhaseDropdown from '../components/PhaseDropdown.jsx';
+import { CheckIcon } from '../components/WatchIcons.jsx';
 import ArcReactor from '../components/ArcReactor.jsx';
 
 const toMinutes = (rt) => {
@@ -59,9 +60,13 @@ function Saga() {
 function TimelineNode({ movie, index, order, watched, toggle }) {
   const phase = PHASES[movie.phase];
   const side = index % 2 === 0 ? 'left' : 'right';
+  const seen = watched.has(movie.id);
   return (
-    <li className={`tl-node ${side} reveal`} style={{ '--phase': phase.color }}>
-      <div className="tl-dot"><span>{order === 'chrono' ? movie.chronoOrder : index + 1}</span></div>
+    <li className={`tl-node ${side} reveal`} data-watched={seen ? 'true' : undefined} style={{ '--phase': phase.color }}>
+      <div className="tl-dot">
+        <span>{order === 'chrono' ? movie.chronoOrder : index + 1}</span>
+        {seen && <i className="tl-dot-check" aria-hidden="true"><CheckIcon size={9} /></i>}
+      </div>
       <div className="tl-card">
         <PosterCard movie={movie} watched={watched.has(movie.id)} onToggle={toggle} size="sm" showMeta={false} />
         <div className="tl-body">
@@ -69,6 +74,11 @@ function TimelineNode({ movie, index, order, watched, toggle }) {
           <Link to={`/movie/${movie.id}`} className="tl-title">{movie.title}</Link>
           <p className="tl-sub">
             <span className="chip" style={{ borderColor: phase.color, color: phase.color }}>{phase.name}</span>
+            {seen && (
+              <span className="chip-watched">
+                <CheckIcon size={10} /> Watched
+              </span>
+            )}
             <span>{order === 'chrono' ? `Released ${movie.release.slice(0, 4)}` : `Set in ${movie.inUniverse}`}</span>
             <span>{movie.runtime}</span>
           </p>
@@ -125,11 +135,11 @@ function Timeline() {
         <p className="muted">
           {order === 'chrono'
             ? (isReverse
-                ? 'Follow the events backwards through in-universe history, from the multiverse to WWII origins.'
-                : 'Follow the events of the MCU as they happen in-universe, from World War II to the multiverse.')
+              ? 'Follow the events backwards through in-universe history, from the multiverse to WWII origins.'
+              : 'Follow the events of the MCU as they happen in-universe, from World War II to the multiverse.')
             : (isReverse
-                ? 'Browse MCU releases in reverse chronological order, from latest premieres to the original 2008 launch.'
-                : 'Watch the films the way audiences first experienced them, phase by phase.')}
+              ? 'Browse MCU releases in reverse chronological order, from latest premieres to the original 2008 launch.'
+              : 'Watch the films the way audiences first experienced them, phase by phase.')}
         </p>
       </div>
 

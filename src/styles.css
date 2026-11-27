@@ -2288,39 +2288,363 @@ body.paused *::after {
   color: #1b1404;
 }
 
-.tag-watched {
-  background: rgba(34, 197, 94, 0.92);
-  color: #04210f;
-  top: auto;
-  bottom: 6px;
+/* ==========================================================================
+   Watched state: armor gold = mission complete
+   ========================================================================== */
+:root {
+  --gold-hi: #f3cc72;
+  --gold-ink: #1b1404;
 }
 
+/* the check draws itself */
+.chk path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+.pop .chk path,
+.chk.draw path {
+  animation: chkdraw 0.45s var(--ease-out) both;
+}
+
+@keyframes chkdraw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+
+/* poster: gold inner frame, slight dim, frosted band */
+.poster-card.is-watched .poster-frame img {
+  opacity: 0.78;
+  filter: saturate(0.85);
+  transition: transform 0.7s var(--ease-out), opacity 0.4s, filter 0.4s;
+}
+
+.poster-card.is-watched .poster-link:hover .poster-frame img {
+  opacity: 1;
+  filter: none;
+}
+
+.poster-card.is-watched .poster-glow {
+  box-shadow: inset 0 0 0 2px rgba(227, 176, 75, 0.85), inset 0 0 22px rgba(227, 176, 75, 0.18);
+}
+
+.watched-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.42rem 0.3rem 0.38rem;
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold-hi);
+  background: linear-gradient(180deg, rgba(13, 16, 32, 0.35), rgba(13, 16, 32, 0.92));
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-top: 1px solid rgba(227, 176, 75, 0.55);
+  text-shadow: 0 0 10px rgba(227, 176, 75, 0.45);
+}
+
+.pop .watched-band {
+  animation: bandin 0.5s var(--ease-out) both;
+}
+
+@keyframes bandin {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+/* the toggle button */
 .watch-toggle {
   position: absolute;
   top: 6px;
   right: 6px;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background: rgba(10, 12, 24, 0.8);
+  background: rgba(10, 12, 24, 0.72);
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.35);
-  font-weight: 700;
   display: grid;
   place-items: center;
-  backdrop-filter: blur(4px);
-  transition: background 0.25s var(--ease-out), transform 0.25s;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: background 0.3s var(--ease-out), border-color 0.3s, color 0.3s, transform 0.25s var(--ease-out), box-shadow 0.3s;
 }
 
 .watch-toggle:hover {
-  background: var(--accent);
+  background: rgba(227, 176, 75, 0.22);
+  border-color: var(--gold);
+  color: var(--gold-hi);
   transform: scale(1.08);
 }
 
+.watch-toggle:active {
+  transform: scale(0.9);
+}
+
 .watch-toggle.on {
-  background: #22c55e;
-  border-color: #22c55e;
-  color: #04210f;
+  background: linear-gradient(160deg, var(--gold-hi), var(--gold));
+  border-color: var(--gold-hi);
+  color: var(--gold-ink);
+  box-shadow: 0 0 0 3px rgba(13, 16, 32, 0.65), 0 0 14px rgba(227, 176, 75, 0.55);
+}
+
+.watch-toggle.on:hover {
+  background: linear-gradient(160deg, #ffe2a0, var(--gold-hi));
+}
+
+/* one-off burst ring when marked */
+.watch-toggle::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 2px solid var(--gold-hi);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pop .watch-toggle {
+  animation: togglepop 0.5s var(--ease-out);
+}
+
+.pop .watch-toggle::after {
+  animation: ringburst 0.7s var(--ease-out);
+}
+
+@keyframes togglepop {
+  40% {
+    transform: scale(1.25);
+  }
+}
+
+@keyframes ringburst {
+  0% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(2.4);
+  }
+}
+
+/* timeline: filled dot + gold chip */
+.tl-node[data-watched] .tl-dot {
+  background: var(--phase);
+  color: #0b0d1a;
+  font-weight: 700;
+}
+
+.tl-dot-check {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--gold);
+  color: var(--gold-ink);
+  box-shadow: 0 0 0 2px var(--canvas);
+  font-style: normal;
+}
+
+.tl-node[data-watched] .tl-card {
+  border-color: rgba(227, 176, 75, 0.35);
+}
+
+.chip-watched {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.05rem 0.55rem;
+  border-radius: 999px;
+  font-weight: 700;
+  color: var(--gold-hi);
+  background: rgba(227, 176, 75, 0.12);
+  border: 1px solid rgba(227, 176, 75, 0.45);
+}
+
+/* detail page button */
+.watch-btn {
+  position: relative;
+  overflow: hidden;
+  gap: 0.55rem;
+}
+
+.wb-icon {
+  display: grid;
+  place-items: center;
+}
+
+.watch-btn.is-watched {
+  background: linear-gradient(160deg, rgba(243, 204, 114, 0.22), rgba(227, 176, 75, 0.08));
+  border-color: rgba(227, 176, 75, 0.7);
+  color: var(--gold-hi);
+  box-shadow: 0 10px 30px rgba(227, 176, 75, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.watch-btn.is-watched .wb-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--gold-ink);
+}
+
+.wb-undo {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  padding-left: 0.55rem;
+  margin-left: 0.15rem;
+  border-left: 1px solid rgba(227, 176, 75, 0.35);
+  opacity: 0.75;
+  transition: opacity 0.25s, color 0.25s;
+}
+
+.watch-btn.is-watched:hover {
+  background: linear-gradient(160deg, rgba(243, 204, 114, 0.3), rgba(227, 176, 75, 0.12));
+}
+
+.watch-btn.is-watched:hover .wb-undo {
+  opacity: 1;
+  color: var(--text-primary);
+}
+
+/* light sweep across the button when marked */
+.watch-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -60%;
+  width: 50%;
+  background: linear-gradient(100deg, transparent, rgba(255, 236, 190, 0.55), transparent);
+  transform: translateX(0) skewX(-18deg);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.watch-btn.pop::before {
+  animation: sweep 0.8s var(--ease-out);
+}
+
+.watch-btn.pop {
+  animation: togglepop 0.45s var(--ease-out);
+}
+
+@keyframes sweep {
+  0% {
+    opacity: 1;
+    transform: translateX(0) skewX(-18deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(420%) skewX(-18deg);
+  }
+}
+
+/* gold seal on the detail poster */
+.detail-poster {
+  position: relative;
+}
+
+.poster-seal {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 1px;
+  color: var(--gold-ink);
+  background: radial-gradient(circle at 35% 30%, #ffe8b0, var(--gold) 60%, #b9862c);
+  box-shadow: 0 0 0 4px rgba(13, 16, 32, 0.55), 0 0 0 5px rgba(243, 204, 114, 0.6), 0 12px 30px rgba(0, 0, 0, 0.55), 0 0 26px rgba(227, 176, 75, 0.45);
+  transform: rotate(-10deg);
+}
+
+.poster-seal::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  border: 1px dashed rgba(27, 20, 4, 0.45);
+}
+
+.poster-seal small {
+  font-family: var(--mono);
+  font-size: 0.36rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.poster-seal.pop {
+  animation: stamp 0.55s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+
+@keyframes stamp {
+  0% {
+    opacity: 0;
+    transform: rotate(-30deg) scale(1.8);
+  }
+
+  100% {
+    opacity: 1;
+    transform: rotate(-10deg) scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .poster-seal {
+    width: 40px;
+    height: 40px;
+    top: 8px;
+    right: 8px;
+  }
+
+  .watched-band {
+    font-size: 0.5rem;
+    letter-spacing: 0.1em;
+    padding: 0.3rem 0.2rem;
+  }
+
+  .tl-card .watch-toggle {
+    width: 26px;
+    height: 26px;
+  }
+
+  .tl-dot-check {
+    width: 13px;
+    height: 13px;
+    right: -7px;
+    bottom: -7px;
+  }
+
+  .tl-dot-check svg {
+    width: 8px;
+    height: 8px;
+  }
 }
 
 /* ==========================================================================
@@ -2594,7 +2918,8 @@ body.paused *::after {
   height: 60px;
   background: linear-gradient(180deg, transparent, var(--canvas));
   pointer-events: none;
-  display: none; /* only shown on phones, where the briefing collapses */
+  display: none;
+  /* only shown on phones, where the briefing collapses */
 }
 
 .story-expand-btn {

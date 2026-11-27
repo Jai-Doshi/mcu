@@ -29,6 +29,11 @@ export default defineConfig({
         navigateFallback: '/index.html',
         runtimeCaching: [
           {
+            urlPattern: ({ url }) => url.pathname.startsWith('/suits/'),
+            handler: 'CacheFirst',
+            options: { cacheName: 'suit-art', expiration: { maxEntries: 80 }, cacheableResponse: { statuses: [0, 200] } },
+          },
+          {
             urlPattern: ({ url }) => url.pathname.startsWith('/hero/'),
             handler: 'CacheFirst',
             options: { cacheName: 'hero-media', expiration: { maxEntries: 6 }, cacheableResponse: { statuses: [0, 200] } },

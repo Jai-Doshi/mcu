@@ -3,6 +3,7 @@ import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import Home from './pages/Home.jsx';
 import MovieDetail from './pages/MovieDetail.jsx';
 import NotFound from './pages/NotFound.jsx';
+import Vault from './pages/Vault.jsx';
 import StrangeSplash from './components/StrangeSplash.jsx';
 import BottomNav from './components/BottomNav.jsx';
 import { useInstallPrompt, useOnline } from './hooks.js';
@@ -64,6 +65,7 @@ export default function App() {
           <NavLink to="/" end>Home</NavLink>
           <Link to="/#saga">Story</Link>
           <Link to="/#timeline">Timeline</Link>
+          <NavLink to="/vault">Suit Vault</NavLink>
           {canInstall && (
             <button className="btn btn-install" onClick={install}>Install app</button>
           )}
@@ -74,6 +76,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home ready={ready} />} />
           <Route path="/movie/:id" element={<MovieDetail />} />
+          <Route path="/vault" element={<Vault />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

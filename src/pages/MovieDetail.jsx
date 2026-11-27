@@ -5,6 +5,7 @@ import { TRAILERS } from '../data/trailers.js';
 import { useReveal, useWatched } from '../hooks.js';
 import PosterCard, { useJustWatched } from '../components/PosterCard.jsx';
 import { CheckIcon, EyeIcon } from '../components/WatchIcons.jsx';
+import { SUITS, heroById } from '../data/suits.js';
 import ShieldLoader from '../components/ShieldLoader.jsx';
 import NotFound from './NotFound.jsx';
 
@@ -94,7 +95,14 @@ export default function MovieDetail() {
   const { watched, toggle } = useWatched();
   const [trailer, setTrailer] = useState(false);
   const [pop, fire] = useJustWatched();
+  const [toast, setToast] = useState(null); // suits just unlocked by marking this film
   const [mobileStoryTab, setMobileStoryTab] = useState('story');
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 5000);
+    return () => clearTimeout(t);
+  }, [toast]);
+  useEffect(() => setToast(null), [id]);
   const [storyExpanded, setStoryExpanded] = useState(false);
   const { progress, done: imagesReady } = useHeroImages(movie);
   useReveal([id]);
@@ -127,9 +135,23 @@ export default function MovieDetail() {
 
   const ytKey = TRAILERS[movie.tmdb];
   const isWatched = watched.has(movie.id);
+  const filmSuits = SUITS.filter((s) => s.film === movie.id);
 
   return (
     <article className={`detail ${imagesReady ? 'loaded' : 'loading'}`} style={{ '--phase': phase.color }}>
+      {toast && (
+        <div className="unlock-toast" role="status">
+          <img src={toast[0].img} alt="" />
+          <span>
+            <small>Suit unlocked</small>
+            <b>
+              {heroById[toast[0].hero].name}: {toast[0].name}
+              {toast.length > 1 ? ` +${toast.length - 1} more` : ''}
+            </b>
+          </span>
+          <Link to="/vault">View vault →</Link>
+        </div>
+      )}
       {!imagesReady && <ShieldLoader overlay progress={progress} label="Assembling" />}
       {trailer && ytKey && <TrailerModal ytKey={ytKey} title={movie.title} onClose={() => setTrailer(false)} />}
       <div className="detail-hero">
@@ -187,7 +209,10 @@ export default function MovieDetail() {
                   type="button"
                   className={`btn watch-btn ${isWatched ? 'is-watched' : 'btn-primary'} ${pop ? 'pop' : ''}`}
                   onClick={() => {
-                    if (!isWatched) fire();
+                    if (!isWatched) {
+                      fire();
+                      if (filmSuits.length) setToast(filmSuits);
+                    } else setToast(null);
                     toggle(movie.id);
                   }}
                   aria-pressed={isWatched}

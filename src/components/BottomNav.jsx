@@ -4,11 +4,11 @@ import { IMG, MOVIES, chronological, isUpcoming } from '../data/movies.js';
 import { useWatched } from '../hooks.js';
 
 // App-style bottom tab bar (phones only, see CSS).
-// Layout: Home · Story · [Up next poster button] · Timeline · Suit
+// Layout: Home · Story · [Up next poster button] · Timeline · Vault
 // - a glowing pill slides to the active side tab
 // - the raised centre button shows the next unwatched film's poster inside a saga-progress ring
 // - always visible, like a native app's tab bar
-const SECTION_ID = { home: null, story: 'saga', timeline: 'timeline', suit: 'progress' };
+const SECTION_ID = { home: null, story: 'saga', timeline: 'timeline' };
 
 const Icon = {
   home: (
@@ -30,12 +30,12 @@ const Icon = {
       <circle cx="6" cy="12" r="2.4" />
     </>
   ),
-  suit: (
+  vault: (
     <>
-      <circle className="ic-fill" cx="12" cy="12" r="3.2" />
-      <circle cx="12" cy="12" r="8.5" />
-      <path d="M12 6.6l4.7 8.1H7.3z" />
-      <path d="M12 2.2v1.6M12 20.2v1.6M2.2 12h1.6M20.2 12h1.6" />
+      <path className="ic-fill" d="M12 3c-4.2 0-7 3-7 7.2V15l2.5 4.5h9L19 15v-4.8C19 6 16.2 3 12 3z" />
+      <path d="M12 3c-4.2 0-7 3-7 7.2V15l2.5 4.5h9L19 15v-4.8C19 6 16.2 3 12 3z" />
+      <path d="M7.5 11.5h3.2l1.3 1.6 1.3-1.6h3.2" />
+      <path d="M10 19.5V21h4v-1.5" />
     </>
   ),
 };
@@ -50,7 +50,7 @@ function useSectionSpy(enabled) {
       const mid = innerHeight * 0.45;
       const top = (id) => document.getElementById(id)?.getBoundingClientRect().top ?? Infinity;
       setSection(
-        top('timeline') <= mid ? 'timeline' : top('saga') <= mid ? 'story' : top('progress') <= mid ? 'suit' : 'home'
+        top('timeline') <= mid ? 'timeline' : top('saga') <= mid ? 'story' : 'home'
       );
     };
     const on = () => raf === null && (raf = requestAnimationFrame(measure));
@@ -81,6 +81,10 @@ export default function BottomNav() {
 
   const go = (id) => (e) => {
     e.preventDefault();
+    if (id === 'vault') {
+      navigate('/vault');
+      return;
+    }
     const target = SECTION_ID[id];
     if (!onHome) {
       navigate(target ? `/#${target}` : '/');
@@ -95,9 +99,9 @@ export default function BottomNav() {
     { id: 'home', label: 'Home', slot: 0, href: '/' },
     { id: 'story', label: 'Story', slot: 1, href: '/#saga' },
     { id: 'timeline', label: 'Timeline', slot: 3, href: '/#timeline' },
-    { id: 'suit', label: `${pct}%`, aria: `Your progress, ${pct} percent watched`, slot: 4, href: '/#progress' },
+    { id: 'vault', label: 'Vault', slot: 4, href: '/vault' },
   ];
-  const activeTab = onHome ? side.find((t) => t.id === section) : null;
+  const activeTab = onHome ? side.find((t) => t.id === section) : pathname === '/vault' ? side[3] : null;
 
   return (
     <nav
@@ -121,7 +125,7 @@ export default function BottomNav() {
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               {Icon[t.id]}
             </svg>
-            <span className="bn-label">{t.id === 'suit' ? (on ? 'Suit' : t.label) : t.label}</span>
+            <span className="bn-label">{t.label}</span>
           </a>
         );
       })}

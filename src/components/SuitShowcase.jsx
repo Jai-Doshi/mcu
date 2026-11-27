@@ -90,7 +90,7 @@ export default function SuitShowcase({ suit, isUnlocked, onClose, onSelect }) {
       <div className="ss-vignette" aria-hidden="true" />
 
       <header className="ss-top">
-        <button type="button" className="ss-back" onClick={onClose}>
+        <button type="button" className="ss-back" onClick={onClose} aria-label="Back to vault">
           <Arrow dir="left" />
           <span>Vault</span>
         </button>

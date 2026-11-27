@@ -4682,3 +4682,174 @@ body.showcase-open {
 .hr-suits::-webkit-scrollbar {
   display: none;
 }
+/* ==========================================================================
+   Suit showcase on phones / portrait: full-screen suit, small overlays on top.
+   (Landscape desktop/tablet/sideways-phone layout above is unchanged.)
+   ========================================================================== */
+@media (orientation: portrait), (orientation: landscape) and (max-width: 599px) {
+  .showcase {
+    display: block;
+    overflow: hidden;
+  }
+
+  /* the suit fills the whole screen */
+  .ss-stage {
+    position: fixed;
+    inset: 0;
+    height: auto;
+    padding: 0;
+    display: block;
+  }
+
+  .ss-suit {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    aspect-ratio: auto;
+    object-fit: cover;
+    object-position: center 42%;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .ss-ring,
+  .ss-level-badge,
+  .ss-bg {
+    display: none;
+  }
+
+  .ss-vignette {
+    background:
+      linear-gradient(180deg, rgba(5, 6, 14, 0.55) 0%, rgba(5, 6, 14, 0) 16%),
+      linear-gradient(0deg, rgba(5, 6, 14, 0.96) 0%, rgba(5, 6, 14, 0.75) 22%, rgba(5, 6, 14, 0) 46%);
+    z-index: 1;
+  }
+
+  /* top: round back arrow, centred chip, close */
+  .ss-top {
+    background: none;
+    padding-left: max(0.9rem, env(safe-area-inset-left));
+    padding-right: max(0.9rem, env(safe-area-inset-right));
+  }
+
+  .ss-back {
+    width: 42px;
+    padding: 0;
+  }
+
+  .ss-back span {
+    display: none;
+  }
+
+  .ss-nav {
+    top: 44%;
+    width: 40px;
+    height: 40px;
+    z-index: 3;
+    background: rgba(10, 12, 26, 0.45);
+  }
+
+  /* bottom: compact overlay, no sheet */
+  .ss-panel {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3;
+    height: auto;
+    margin: 0;
+    padding: 0 max(1rem, env(safe-area-inset-right)) calc(1rem + env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+    border: 0;
+    border-radius: 0;
+    background: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .ss-eyebrow,
+  .ss-blurb,
+  .ss-levels {
+    display: none;
+  }
+
+  .ss-title {
+    font-size: clamp(2rem, 9vw, 2.8rem);
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.7), 0 0 26px color-mix(in srgb, var(--hero) 35%, transparent);
+    margin-bottom: 0.6rem;
+  }
+
+  .ss-block {
+    padding: 0;
+    margin: 0 0 0.7rem;
+    background: none;
+    border: 0;
+  }
+
+  .ss-block-head {
+    margin-bottom: 0.35rem;
+  }
+
+  .ss-block-head strong {
+    font-size: 1.1rem;
+  }
+
+  .ss-bar {
+    margin: 0;
+  }
+
+  .ss-bar i {
+    height: 5px;
+  }
+
+  /* two small poster chips side by side */
+  .ss-films {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .ss-film {
+    gap: 0.5rem;
+    padding: 0.4rem;
+    border-radius: 12px;
+    background: rgba(10, 12, 26, 0.62);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .ss-film img {
+    width: 38px;
+    border-radius: 6px;
+  }
+
+  .ss-film small {
+    font-size: 0.5rem;
+    letter-spacing: 0.1em;
+  }
+
+  .ss-film b {
+    font-size: 0.74rem;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .ss-film em {
+    display: none;
+  }
+
+  .ss-max {
+    flex: 0 0 38px;
+    height: 38px;
+  }
+
+  .ss-max svg {
+    width: 16px;
+    height: 16px;
+  }
+}

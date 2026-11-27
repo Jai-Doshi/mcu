@@ -4037,6 +4037,7 @@ body.paused *::after {
     bottom: calc(6.2rem + env(safe-area-inset-bottom));
   }
 }
+
 /* if a suit image is ever missing, show a clean placeholder instead of a broken icon */
 .sc-art img.missing {
   visibility: hidden;
@@ -4044,4 +4045,18 @@ body.paused *::after {
 
 .sc-art:has(img.missing) {
   background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--hero) 25%, transparent), #0b0e1c 70%);
+}
+
+.poster-row,
+.cast-row {
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* Older Edge/IE */
+}
+
+.poster-row::-webkit-scrollbar,
+.cast-row::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Edge, mobile browsers */
 }

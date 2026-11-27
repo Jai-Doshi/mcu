@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import SuitShowcase from '../components/SuitShowcase.jsx';
 import { HEROES, RANKS, SUITS, filmOf, heroById, suitsFor } from '../data/suits.js';
 import { useWatched } from '../hooks.js';
 import { CheckIcon } from '../components/WatchIcons.jsx';
@@ -101,11 +102,27 @@ function SuitModal({ suit, unlocked, onClose }) {
 
 export default function Vault() {
   const { watched } = useWatched();
+  const { suitId } = useParams();
+  const navigate = useNavigate();
   const [filter, setFilter] = useState('all');
-  const [open, setOpen] = useState(null);
+  const [open, setOpen] = useState(null); // locked-suit modal
   const [seen] = useState(readSeen);
 
   const isUnlocked = (s) => watched.has(s.film);
+  const showcased = suitId ? SUITS.find((s) => s.id === suitId) : null;
+  const showcaseOk = showcased && isUnlocked(showcased);
+
+  // a locked or unknown suit in the URL goes back to the vault
+  useEffect(() => {
+    if (suitId && !showcaseOk) navigate('/vault', { replace: true });
+  }, [suitId, showcaseOk, navigate]);
+
+  const openSuit = (s) => (isUnlocked(s) ? navigate(`/vault/${s.id}`) : setOpen(s));
+  const closeShowcase = () => {
+    // go back if we came from the vault, so the browser/phone back button stays natural
+    if (window.history.state?.idx > 0) navigate(-1);
+    else navigate('/vault', { replace: true });
+  };
   const unlockedCount = SUITS.filter(isUnlocked).length;
   const pct = Math.round((unlockedCount / SUITS.length) * 100);
   const rank = [...RANKS].reverse().find((r) => unlockedCount >= r.min);
@@ -203,7 +220,7 @@ export default function Vault() {
             {h.suits
               .filter((s) => (filter === 'unlocked' ? isUnlocked(s) : filter === 'locked' ? !isUnlocked(s) : true))
               .map((s) => (
-                <SuitCard key={s.id} suit={s} unlocked={isUnlocked(s)} isNew={newIds.has(s.id)} onOpen={setOpen} />
+                <SuitCard key={s.id} suit={s} unlocked={isUnlocked(s)} isNew={newIds.has(s.id)} onOpen={openSuit} />
               ))}
           </div>
         </section>
@@ -214,6 +231,14 @@ export default function Vault() {
       </p>
 
       {open && <SuitModal suit={open} unlocked={isUnlocked(open)} onClose={() => setOpen(null)} />}
+      {showcaseOk && (
+        <SuitShowcase
+          suit={showcased}
+          isUnlocked={isUnlocked}
+          onClose={closeShowcase}
+          onSelect={(id) => navigate(`/vault/${id}`, { replace: true })}
+        />
+      )}
     </div>
   );
 }

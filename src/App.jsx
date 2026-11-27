@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import Home from './pages/Home.jsx';
 import MovieDetail from './pages/MovieDetail.jsx';
@@ -10,7 +10,12 @@ import { useInstallPrompt, useOnline } from './hooks.js';
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
+  const prevPath = useRef(pathname);
   useEffect(() => {
+    const from = prevPath.current;
+    prevPath.current = pathname;
+    // opening/closing a suit showcase keeps the vault's scroll position
+    if (from !== pathname && from.startsWith('/vault') && pathname.startsWith('/vault')) return;
     if (hash) {
       const el = document.getElementById(hash.slice(1));
       if (el) {
@@ -77,6 +82,7 @@ export default function App() {
           <Route path="/" element={<Home ready={ready} />} />
           <Route path="/movie/:id" element={<MovieDetail />} />
           <Route path="/vault" element={<Vault />} />
+          <Route path="/vault/:suitId" element={<Vault />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
